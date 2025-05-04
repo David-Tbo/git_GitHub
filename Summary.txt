@@ -1,0 +1,222 @@
+GIT : MAIN COMMANDS:  
+
+`git -version` : check if Git is installed.  
+`git config --global user.email "me@example.com"` : set the values of the user email.  
+`git config --global user.name "My name"` : set the values of the user name.  
+
+`git init`: initializes a new Git repository in the current directory.  
+
+`ls -la` : check the initialization.  
+drwxrwxr-x  3 user user 4096 Jul  9 18:16 .  
+drwxr-xr-x 18 user user 4096 Jul  9 18:16 ..  
+drwxrwxr-x  7 user user 4096 Jul  9 18:16 .git  
+Right now our working tree is empty.  
+
+`ls -l .git/` : look inside the created repo called a Git directory. 
+drwxrwxr-x 2 user user 4096 Jul  9 18:16 branches  
+-rw-rw-r-- 1 user user   92 Jul  9 18:16 config  
+-rw-rw-r-- 1 user user   73 Jul  9 18:16 description  
+-rw-rw-r-- 1 user user   23 Jul  9 18:16 HEAD  
+drwxrwxr-x 2 user user 4096 Jul  9 18:16 hooks  
+drwxrwxr-x 2 user user 4096 Jul  9 18:16 info  
+drwxrwxr-x 4 user user 4096 Jul  9 18:16 objects   
+drwxrwxr-x 4 user user 4096 Jul  9 18:16 refs     
+The area outside the git directory is the working tree.   
+The working tree is the current version of your project.  
+Let's add a first file to the working tree: `vim disk_usage.py`    
+
+`git add`: stages changes to be committed.  
+`git add disk_usage.py`: to make Git track our file.  
+With this command, we have added our file to the staging area (ready to be commited).  
+`git add *`: to make Git track all the files that are not already tracked.  
+  
+`git status`: shows the status of changes in the repository.  
+To get some information about the current working tree and pending changes.  
+
+`git commit`: commits staged changes to the repository.  
+We tell Git that we want to save our changes. 
+It opens a text editor where we can enter a commit message.  
+
+`git commit -m 'Add periods to the end of sentences.'`  
+To avoid to open the editor and directly write the message.  
+we can then `git status` to see the status of changes.  
+
+`git commit -a -m ‘’Call check reboot’’`: skipping the staging area
+
+`git log`: to check the history of the commits of our project.
+`git log -p`: shows the commit and the lines that changed in each commit (p:patch)
+`git log -p -1`: shows the commit and the lines that changed in the previous commit
+`git log --stat` : to have statistics
+`git show 24ae92f5edec5a59f9a46e9c5dc5bfb9d6`: show the specific commit 24ae[...]
+
+`git diff`: shows the differences between the working directory and the last commit. 
+In this example, I have modified the matrice.py code adding a point and I git diff before committing davidtbo@MacBook-Air-de-David 32_GitHub % git diff
+diff --git a/matrice.py b/matrice.py
+index 9a18d9a..30be7b5 100755
+--- a/matrice.py +++ b/matrice.py @@ -1,6 +1,6 @@
+# -*- coding: utf-8 -*- """
+-Spyder Editor
++Spyder Editor.
+This is a temporary script file. """
+
+`git rm -f <pgm name>`: deleting file -f: to force the deleting
+Tips to force to kill a process either:
+1/ rm -f .git/index.lock
+2/ del .git/index.lock
+
+git mv: Moving or renaming a filedavidtbo@MacBook-Air-de-David 32_GitHub % `git mv matrice.py matrix.py`
+
+.gitignore: For files(s) we want to ignore in our Git processdavidtbo@MacBook-Air-de-David 32_GitHub % echo temp.rtf > .gitignore
+
+UNDOING CHANGES
+---------------
+`git checkout test.rtf`: Revert changes to modified files before they are staged
+`git checkout -p`: -p allows to verify the changes one by one rather than check all the file
+`git reset HEAD <file name>` : it is the opposit of git add (it unstages the file)
+`git commit -- amend`: if you want to change the message of your last commit. This opens the file, you write and save/exit
+`git revert HEAD`: It creates a commit that contains the inverse of all the changes made in the bad commit in order to cancel them out.
+`git revert <commit_id>`: To revert a specific commit.
+
+BRANCHING
+---------
+Les branches permettent dans Git de développer des fonctionnalités ou de corriger des bogues de manière isolée,
+sans affecter la branche principale du dépôt.
+
+`git branch <branch name>`: to create a new branch "<branch name>" (mais on reste sur la branch main)
+Cette nouvelle branche <branch name> contient au départ exactement les mêmes fichiers que la branche main (vérifier en faisant ls -la sur les deux branches) i.e. in english, the working tree is share but the commits are specific to each branch.
+`git branch`: shows the list of branches in the repository.
+`git checkout <branch name>`: to switch on the <branch name> branch.
+`git checkout -b <branch name>`: two in one i.e. to create the branch and to switch to it in a single command.
+
+`git branch -d <branch name>`: To delete a branch
+`git branch -D <branch name>`: to delete a branch when the branch is not fully merged with the master branch
+
+MERGING
+-------
+`git merge` : to merge branches back into the main tronc of code. On fusionne la branche dans la branche principale 'main'.
+1. `git checkout main`
+2. `git merge <branch name>`
+NB: on peut fusionner d'autres branches en utlisant le même principe.
+1. git checkout <branch main name>
+2. git merge <branch to get name>
+
+MERGING CONFLICTS:
+-----------------
+4 types of conflicts when we try to merge:
+1. Un fichier a des modifications à la fois dans le "main" et dans l'autre branche que l'on veut fusionner (modifications concurrentes).
+2. Un fichier a été supprimé dans une branche et pas dans une autre (suppression de fichiers)
+3. Un fichier est renommé dans une branche et modifié dans une autre (renommage de fichiers)
+4. Des modifications qui ne sont pas au même endroit et donc difficile à combiner (modifications complexes).
+
+Conflict example:
+--------------------------------------------------------------------------------
+1. Créez un nouveau répertoire et initialisez un dépôt Git:
+mkdir fusion-test
+cd fusion-test
+git init
+
+2. Créez un fichier nommé "example.txt" et ajoutez-le au dépôt:
+echo "Hello, world!" > example.txt
+git add example.txt
+git commit -m "Initial commit"
+
+3. Créez une nouvelle branche nommée "feature" et basculez vers cette branche:
+git branch feature
+git checkout feature
+
+4. Modifiez le fichier "example.txt" dans la branche "feature" en ajoutant une nouvelle ligne:
+echo "This is a new feature." >> example.txt
+git add example.txt
+git commit -m "Add new feature"
+
+5. Basculez vers la branche "main":
+git checkout main
+
+6. Modifiez le fichier "example.txt" dans la branche "main" en ajoutant une nouvelle ligne à la même position que la modification apportée dans la branche "feature":
+echo "This is a new main change." >> example.txt
+git add example.txt
+git commit -m "Add new main change"
+
+7. Essayez de fusionner la branche "feature" dans la branche "main" en utilisant la méthode de fusion fast-forward:
+git merge feature
+
+Git affichera un message d'erreur indiquant qu'il y a un conflit de fusion.
+8. Ouvrez le fichier "example.txt" dans un éditeur de texte et recherchez les marqueurs de conflit ajoutés par Git. Les marqueurs de conflit ressembleront à ceci:
+
+<<<<<<< HEAD
+This is a new main change.
+=======
+This is a new feature.
+>>>>>>> feature
+
+9. Résolvez le conflit en éditant manuellement le fichier "example.txt" pour qu'il contienne les modifications que vous souhaitez conserver. 
+Par exemple, vous pouvez remplacer les marqueurs de conflit par la ligne suivante:
+
+This is a new change.
+
+10. Enregistrez le fichier modifié et mettez-le en scène à l'aide de la commande "git add":
+git add example.txt
+
+11. Validez les modifications en utilisant la commande "git commit":
+git commit -m "Resolve merge conflict"
+
+12. Vérifiez que la fusion a été effectuée avec succès en utilisant la commande "git log":
+git log --oneline --graph --all
+--------------------------------------------------------------------------------
+
+`git merge --abort`: It will stop the merge and reset the files of your working tree back to the previous commit before the merge ever happen.
+
+
+WORKING WITH REMOTES:
+---------------------
+Introduction to GitHub
+
+`git clone`: creates a local copy of a remote repository. 
+`git clone https://github.com/David-Tbo/Project_Management.git`
+
+`git remote -v`: pour afficher les URL des dépôts distants liés à votre dépôt local. 
+origin  https://github.com/David-Tbo/Project_Mgt.git (fetch)
+origin  https://github.com/David-Tbo/Project_Mgt.git (push)
+Signifie que votre dépôt local est lié à un dépôt distant nommé "origin" situé à l'URL "https://github.com/David-Tbo/Project_Mgt.git", et que cette URL est utilisée pour récupérer (fetch) et envoyer (push) des modifications.
+
+Managing remote repositories:
+https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories
+
+`git push`: pushes changes from the local repository to the remote repository:
+https://www.youtube.com/watch?v=bvi37IbJXS4
+
+How to push on a remote repository:
+-----------------------------------
+Sur son GitHub allez sur "Settings", puis "<> Developer settings", "Personal access tokens" select "Tokens (classic) and on the right "Generate new token" and select "Generate new token (classic)".
+Fulfill the questionary, 30 days and select scopes click on everything.
+At the bottom click on "Generate token".
+Copy the token generate in an edit file.
+On your terminal, type the command:
+
+`git remote set-url origin https://<token>@github.com/<User_name>/<local_repo>`
+
+For example (token is invented):
+`git remote set-url origin https://ghp_raaaaaaaaaaaCDQe@github.com/David-Tbo/33_Project_Management`
+
+ 
+`git pull`: updates the local repository with changes from the remote repository.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
